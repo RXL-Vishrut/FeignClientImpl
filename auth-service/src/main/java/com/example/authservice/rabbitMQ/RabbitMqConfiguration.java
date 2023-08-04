@@ -16,21 +16,26 @@ public class RabbitMqConfiguration {
     @Value("${spring.rabbitmq.routingkey}")
     private String routingKey;
 
+    @Value("${spring.rabbitmq.queue}")
+    private String queue;
+
+    @Value("${spring.rabbitmq.exchange}")
+    private String exchange;
+
     @Bean
     Queue queue() {
-        return new Queue("user.queue", false);
+        return new Queue(queue, false);
     }
 
     @Bean
     DirectExchange exchange() {
-        return new DirectExchange("user.exchange");
+        return new DirectExchange(exchange);
     }
 
     @Bean
     Binding queueBinding(){
         return BindingBuilder.bind(queue()).to(exchange()).with(routingKey);
     }
-
 
     @Bean
     public MessageConverter jsonMessageConverter() {
