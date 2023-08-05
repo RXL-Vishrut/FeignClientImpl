@@ -4,6 +4,8 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +23,15 @@ public class RabbitMqConfiguration {
 
     @Value("${spring.rabbitmq.exchange}")
     private String exchange;
+
+    @Value("${spring.rabbitmq.host}")
+    private String host;
+
+    @Value("${spring.rabbitmq.username}")
+    private String username;
+
+    @Value("${spring.rabbitmq.password}")
+    private String password;
 
     @Bean
     Queue queue() {
@@ -42,4 +53,19 @@ public class RabbitMqConfiguration {
         return new Jackson2JsonMessageConverter();
     }
 
+    @Bean
+    CachingConnectionFactory connectionFactory() {
+        CachingConnectionFactory cachingConnectionFactory = new CachingConnectionFactory();
+        cachingConnectionFactory.setHost(host);
+        cachingConnectionFactory.setUsername(username);
+        cachingConnectionFactory.setPassword(password);
+        return cachingConnectionFactory;
+    }
+
+    @Bean
+    RabbitTemplate rabbitTemplate() {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
+        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+        return rabbitTemplate;
+    }
 }

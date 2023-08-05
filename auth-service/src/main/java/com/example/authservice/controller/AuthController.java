@@ -11,9 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -47,7 +45,7 @@ public class AuthController {
     @PostMapping("/v1/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User saveUser = userRepo.save(user);
-        Payload payload = new Payload(user.getId());
+        Payload payload = new Payload(saveUser.getId());
         rabbitMQSender.send(payload);
         return ResponseEntity.created(null).build();
     }
